@@ -3,11 +3,12 @@ package com.leonardo.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
@@ -19,6 +20,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.ui.Model;
 
+import com.leonardo.properties.MongoProperties;
 import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -26,19 +28,23 @@ import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClients;
 
 @Configuration
+@EnableMongoAuditing
 @EnableMongoRepositories(basePackages = "com.leonardo.repository")
 public class MongoConfig extends AbstractMongoClientConfiguration {
 	
+	@Autowired
+	private MongoProperties mongoProps;
+	
 	@Bean
 	public SimpleMongoClientDatabaseFactory mongoDbFactory() {
-		SimpleMongoClientDatabaseFactory simpleMongoDbFactory = new SimpleMongoClientDatabaseFactory(mongoClient(), "leonardo");
+		SimpleMongoClientDatabaseFactory simpleMongoDbFactory = new SimpleMongoClientDatabaseFactory(mongoClient(), mongoProps.getDatabase());
 		return simpleMongoDbFactory;
 	}
 	
     @Override
     public com.mongodb.client.MongoClient mongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/leonardo");
-        MongoCredential credential = MongoCredential.createCredential("quocthang123", getDatabaseName(), "quocthang123".toCharArray());
+        ConnectionString connectionString = new ConnectionString(mongoProps.getUrl());
+        MongoCredential credential = MongoCredential.createCredential(mongoProps.getUsername(), getDatabaseName(), mongoProps.getPassword().toCharArray());
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .credential(credential)
@@ -66,7 +72,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
 	@Override
 	protected String getDatabaseName() {
-		return "leonardo";
+		return mongoProps.getDatabase();
 	}
 	
 	
