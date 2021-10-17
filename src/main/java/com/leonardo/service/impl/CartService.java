@@ -1,5 +1,6 @@
 package com.leonardo.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +25,13 @@ public class CartService implements ICartService {
 	
 	
 	@Override
-	public List<CartDocs> findValueCart(String anotherName) {
-		return Optional.ofNullable(anotherName).map(value -> cartRepo.findByAnotherName(anotherName)).orElse(cartRepo.findAll());
+	public List<CommonFashionDocs> findValueCart(String anotherName) {
+		List<CommonFashionDocs> listItem = new ArrayList<CommonFashionDocs>();
+		List<CartDocs> listItemInCart = Optional.ofNullable(anotherName).map(value -> cartRepo.findByAnotherName(anotherName)).orElse(cartRepo.findAll());
+		for(CartDocs itemInCart : listItemInCart) {
+			listItem.add(fasionRepo.findOneByAnotherName(itemInCart.getAnotherName()));
+		}
+		return listItem;
 	}
 
 	@Override

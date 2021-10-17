@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.leonardo.convert.CommonFashionConvert;
@@ -23,21 +29,14 @@ public class FashionService implements IFashionService {
 	private CommonFashionConvert fashionConvert;
 
 	@Override
-	public List<CommonFashionDocs> findAllFashion() {
-		return fashionRepo.findAll();
+	public List<CommonFashionDocs> findAllFashion(Integer page) {
+		return Optional.ofNullable(page).map(item -> fashionRepo.findAll(PageRequest.of(item, 8, Sort.Direction.DESC, "_id")).getContent()).orElse(fashionRepo.findAll());
 	}
 
 	@Override
-	public CommonFashionDocs addItem(CommonFashionDTO fashionDto) {
+	public CommonFashionDocs addOrUpdateItem(CommonFashionDTO fashionDto) {
 		CommonFashionDocs newFashion = fashionConvert.toDocs(fashionDto);
 		return Optional.ofNullable(newFashion).map(item -> fashionRepo.save(item)).orElse(null);
-	}
-
-	@Override
-	public CommonFashionDocs updateItem(CommonFashionDTO fashionDto) {
-		CommonFashionDocs newFashion = fashionConvert.toDocs(fashionDto);
-		return Optional.ofNullable(newFashion).map(item -> fashionRepo.save(item)).orElse(null);
-		
 	}
 
 
@@ -47,6 +46,7 @@ public class FashionService implements IFashionService {
 	}
 
 	@Override
+	@Transactional
 	public Boolean deleteById(String[] ids) {
 		return Optional.ofNullable(ids).map(listId -> {  
 			for(String idDelete : listId) {
@@ -57,18 +57,18 @@ public class FashionService implements IFashionService {
 	}
 
 	@Override
-	public List<CommonFashionDocs> findByType(String type) {
-		return Optional.ofNullable(type).map(value -> fashionRepo.findByType(value)).orElse(null);
+	public List<CommonFashionDocs> findByTypeAndAnotherName(String type, String anotherName) {
+		return (anotherName != null ? (fashionRepo.findByTypeAndAnotherName(type, anotherName)):(Optional.ofNullable(type).map(value -> fashionRepo.findByType(value)).orElse(null)));
 	}
 
 	@Override
-	public Boolean deleteByAnotherName(String anotherName) {
-		return Optional.ofNullable(anotherName).map(value -> {
-			return fashionRepo.deleteByAnotherName(value);
-			}).orElse(false);
+	@Transactional
+	public void deleteByAnotherName(String anotherName) {
+		fashionRepo.deleteByAnotherName(anotherName);
 	}
 
 	@Override
+	@Transactional
 	public Boolean addListItem(List<CommonFashionDTO> listFashionsDto) {
 		List<CommonFashionDocs> listResult = new ArrayList<CommonFashionDocs>();
 		for(CommonFashionDTO fashionConverter : listFashionsDto) {
@@ -79,6 +79,8 @@ public class FashionService implements IFashionService {
 			return true;
 		}).orElse(false);
 	}
+
+
 }
 
 

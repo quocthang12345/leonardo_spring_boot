@@ -10,7 +10,7 @@ import com.leonardo.document.resource.ERole;
 import lombok.Data;
 
 @Data
-@Document(collection = "roles")
+@Document(collection = "role")
 public class RoleDocs extends Common{
 	
 	@Field("roleName")

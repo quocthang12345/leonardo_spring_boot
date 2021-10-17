@@ -1,5 +1,8 @@
 package com.leonardo.api;
 
+import java.util.List;
+
+import org.apache.tomcat.jni.FileInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -29,15 +32,16 @@ public class FileUploadAPI {
 			  },
 			 path = "/upload"
 			  )
-	  public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+	  public ResponseEntity<String> uploadFile(@RequestParam("file") List<MultipartFile> files) {
 	    String message = "";
 	    try {
-	      storageService.save(file);
-
-	      message = "Uploaded the file successfully: " + file.getOriginalFilename();
+	    	for(MultipartFile file : files) {
+	    		storageService.save(file);
+	    	}
+	      message = "Uploaded the file successfully: ";
 	      return ResponseEntity.status(HttpStatus.OK).body(message);
 	    } catch (Exception e) {
-	      message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+	      message = "Could not upload the file: " + "!";
 	      return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
 	    }
 	  }
@@ -57,9 +61,8 @@ public class FileUploadAPI {
 
 	  @GetMapping("/files/{filename:.+}")
 	  @ResponseBody
-	  public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+	  public ResponseEntity<String> getFile(@PathVariable String filename) {
 	    Resource file = storageService.load(filename);
-	    return ResponseEntity.ok()
-	        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+	    return ResponseEntity.ok().body("/" + file.getFilename());
 	  }
 }

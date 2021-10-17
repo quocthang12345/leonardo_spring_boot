@@ -9,9 +9,10 @@ import com.leonardo.document.CommonFashionDocs;
 
 @Repository
 public interface FashionRepository extends MongoRepository<CommonFashionDocs, String> {
-
+	
 	List<CommonFashionDocs> findByType(String type);
+	List<CommonFashionDocs> findByTypeAndAnotherName(String type,String anotherName);
 	List<CommonFashionDocs> findByTypeAndModel(String type, String model);
 	CommonFashionDocs findOneByAnotherName(String anotherName);
-	Boolean deleteByAnotherName(String anotherName);
+	void deleteByAnotherName(String anotherName);
 }

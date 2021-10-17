@@ -1,9 +1,9 @@
 package com.leonardo.api;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.leonardo.document.CommonFashionDocs;
@@ -43,9 +44,22 @@ public class CommonFashionAPI {
 			},
 			path = {"/getCollectionFashion/{type}"}
 	)
-	public List<CommonFashionDocs> findListValueFashion(@PathVariable(value = "type", required = true) String type){
-		return fashionService.findByType(type);
+	public List<CommonFashionDocs> findListValueFashion(@PathVariable(value = "type", required = true) String type, @RequestParam(required = false, value = "anotherName") String anotherName){
+		return fashionService.findByTypeAndAnotherName(type,anotherName);
 	}
+	
+	@GetMapping(
+			produces = {
+					MediaType.APPLICATION_JSON_VALUE
+			},
+			path = {"/getCollectionFashion"}
+	)
+	public List<CommonFashionDocs> findListValueFashion(@RequestParam(value = "page", required = false) Integer page){
+		return fashionService.findAllFashion(page);
+	}
+	
+	
+
 	
 	@PostMapping(
 			produces = {
@@ -57,7 +71,7 @@ public class CommonFashionAPI {
 			path = {"/postCommonFashion"}
 	)
 	public ResponseEntity<String> addValueInList(@RequestBody CommonFashionDTO fashions){
-		CommonFashionDocs newFashion = fashionService.addItem(fashions);
+		CommonFashionDocs newFashion = fashionService.addOrUpdateItem(fashions);
 		return ((newFashion != null) ? new ResponseEntity<String>(HttpStatus.ACCEPTED) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST));
 		
 	}
@@ -86,7 +100,7 @@ public class CommonFashionAPI {
 			path = {"/updateCommonFashion"}
 	)
 	public ResponseEntity<String> updateValueInList(@RequestBody CommonFashionDTO fashions){
-		CommonFashionDocs newFashion = fashionService.updateItem(fashions);
+		CommonFashionDocs newFashion = fashionService.addOrUpdateItem(fashions);
 		return ((newFashion != null) ? new ResponseEntity<String>(HttpStatus.ACCEPTED) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST));
 	}
 	
@@ -94,14 +108,11 @@ public class CommonFashionAPI {
 			produces = {
 					MediaType.APPLICATION_JSON_VALUE
 			},
-			consumes = {
-					MediaType.APPLICATION_JSON_VALUE
-			},
 			path = {"/deleteCommonFashion/{anotherName}"}
 	)
 	public ResponseEntity<String> deleteValueInList(@PathVariable(value = "anotherName",required = true) String anotherName){
-		Boolean isDeleted = fashionService.deleteByAnotherName(anotherName);
-		return ((isDeleted) ? new ResponseEntity<String>(HttpStatus.ACCEPTED) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST));
+		fashionService.deleteByAnotherName(anotherName);
+		return new ResponseEntity<String>(HttpStatus.ACCEPTED);
 		
 	}
 }

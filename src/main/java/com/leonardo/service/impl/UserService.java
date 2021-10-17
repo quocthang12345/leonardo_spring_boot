@@ -1,5 +1,7 @@
 package com.leonardo.service.impl;
 
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,4 +35,23 @@ public class UserService implements IUserService {
 		return false;
 	}
 
+	@Override
+	public UserDocs findByUsernameAndStatus(String username, int status) {
+		return userRepo.findOneByUsernameAndStatus(username, status);
+	}
+
+	@Override
+	public UserDocs findById(String id) {
+		return userRepo.findById(id).get();
+	}
+	
+	@Override
+	public UserDocs findOneByVerifyCode(String verifyCode) {
+		return userRepo.findOneByVerifyCode(verifyCode);
+	}
+	
+	@Override
+	public void updateUser(UserDocs user) {
+		Optional.ofNullable(user).map(item -> userRepo.save(item)).orElseThrow();
+	}
 }

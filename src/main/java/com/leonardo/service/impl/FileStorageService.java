@@ -2,11 +2,14 @@ package com.leonardo.service.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
+
+import javax.transaction.Transactional;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -19,7 +22,9 @@ import com.leonardo.service.IFileStorageService;
 @Service
 public class FileStorageService implements IFileStorageService{
 
-	 private final Path root = Paths.get("uploads");
+//	 private final Path root = Paths.get("uploads");
+	 
+	 private final Path root = Paths.get(URI.create("file:///home/quocthang12/Desktop/leonardo_reactjs/public"));
 
 	  @Override
 	  public void init() {
@@ -33,7 +38,9 @@ public class FileStorageService implements IFileStorageService{
 	  @Override
 	  public void save(MultipartFile file) {
 	    try {
-	      Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+	      if(!Files.exists(this.root.resolve(file.getOriginalFilename()))) {
+		      Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+	      }
 	    } catch (Exception e) {
 	      throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
 	    }
@@ -56,6 +63,7 @@ public class FileStorageService implements IFileStorageService{
 	  }
 
 	  @Override
+	  @Transactional
 	  public void deleteAll() {
 	    FileSystemUtils.deleteRecursively(root.toFile());
 	  }

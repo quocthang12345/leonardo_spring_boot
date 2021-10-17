@@ -1,4 +1,4 @@
-package com.leonardo.service.impl;
+package com.leonardo.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +12,6 @@ import com.leonardo.repository.UserRepository;
 
 @Service
 public class CustomUserDetailService implements UserDetailsService {
-
 	@Autowired
 	private UserRepository userRepo;
 	
@@ -24,6 +23,15 @@ public class CustomUserDetailService implements UserDetailsService {
 			return userDetails;
 		}
 		return null;
+	}
+	
+	
+	public UserDetails loadUserById(String id) throws UsernameNotFoundException {
+		UserDocs user = userRepo.findById(id).get();
+		if(user != null) {
+			UserDetails userDetails = new UserDetailImpl(user);
+			return userDetails;
+		}
+		return null;
 	} 
-
 }

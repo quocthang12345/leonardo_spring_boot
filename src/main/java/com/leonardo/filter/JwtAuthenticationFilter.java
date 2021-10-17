@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.annotations.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.leonardo.service.impl.CustomUserDetailService;
+import com.leonardo.security.CustomUserDetailService;
 import com.leonardo.util.JwtTokenProvider;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +37,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 // Lấy username từ chuỗi jwt
-                String username = tokenProvider.getUserNameFromJWT(jwt);
+                String id = tokenProvider.getIdFromJWT(jwt);
                 // Lấy thông tin người dùng từ id
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = customUserDetailsService.loadUserById(id); 
+                // find theo id để đạt đc sự nhất quán hơn là oauth2 findByEmail and userDetail findByUsername
                 if(userDetails != null) {
                     // Nếu người dùng hợp lệ, set thông tin cho Seturity Context
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ex) {
-            log.error("failed on set user authentication", ex);
+            System.out.print(ex.getMessage());
         }
 
         filterChain.doFilter(request, response);

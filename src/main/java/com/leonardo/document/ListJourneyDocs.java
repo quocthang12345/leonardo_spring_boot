@@ -19,6 +19,6 @@ public class ListJourneyDocs extends Common{
 	private String imgJourney;
 	
 	@Field(value = "description")
-	private List<String> descriptionJouney = new ArrayList<String>();
+	private List<String> descriptionJourney = new ArrayList<String>();
 	
 }

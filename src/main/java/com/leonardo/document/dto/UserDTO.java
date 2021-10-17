@@ -9,6 +9,8 @@ import lombok.Data;
 @Data
 public class UserDTO {
 	private String username;
+
+	private String fullname;
 	
 	private String password;
 	
@@ -16,9 +18,17 @@ public class UserDTO {
 	
 	private String address;
 	
+	private String city;
+	
 	private int status;
 	
 	private List<String> roleId = new ArrayList<String>();
+	
+	private String email;
+	
+	private Boolean emailVerified = false;
+	
+	private String verifyCode;
 	
 	private Date createDate;
 	

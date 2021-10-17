@@ -2,21 +2,23 @@ package com.leonardo.document;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
 public class ListMenuOfMen {
-	@JsonProperty("Card")
-	private List<String> wallets;
+	@Field("Card")
+	private List<String> Wallet;
 	
-	@JsonProperty("Shoes")
-	private List<String> shoes;
+	@Field("Shoes")
+	private List<String> Shoes;
 	
-	@JsonProperty("Bags")
-	private List<String> bags;
+	@Field("Bag")
+	private List<String> Bag;
 	
-	@JsonProperty("Accessories")
-	private List<String> accessories;
+	@Field("Accessories")
+	private List<String> Accessories;
 }

@@ -1,9 +1,6 @@
 package com.leonardo.api;
 
 import java.util.List;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.leonardo.document.CartDocs;
+import com.leonardo.document.CommonFashionDocs;
 import com.leonardo.service.ICartService;
 
 @RestController
@@ -32,16 +29,13 @@ public class CartAPI {
 			},
 			path = {"/getCarts/{anotherName}","/getCarts"}
 	)
-	public List<CartDocs> findListValue(@PathVariable(value = "anotherName", required = false) String anotherName){
-		List<CartDocs> result = cartService.findValueCart(anotherName);
+	public List<CommonFashionDocs> findListValue(@PathVariable(value = "anotherName", required = false) String anotherName){
+		List<CommonFashionDocs> result = cartService.findValueCart(anotherName);
 		return result;
 	}
 	
 	@PostMapping(
 			produces = {
-					MediaType.APPLICATION_JSON_VALUE
-			},
-			consumes = {
 					MediaType.APPLICATION_JSON_VALUE
 			},
 			path = {"/postCarts/{anotherName}"}	

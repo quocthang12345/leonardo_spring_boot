@@ -1,7 +1,5 @@
 package com.leonardo.api;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +22,7 @@ public class MenuAPI {
 			},
 			path = {"/getMenu"}
 	)
-	public List<MenuDocs> findListValue(){
-		return menuService.findAll();
+	public MenuDocs findListValue(){
+		return menuService.findAll().get(0);
 	}
 }

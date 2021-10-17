@@ -34,6 +34,11 @@ public class UserDetailImpl implements UserDetails {
 		}
 		return authorities;
 	}
+	
+
+	public String getId() {
+		return user.get_id();
+	}
 
 
 	@Override
